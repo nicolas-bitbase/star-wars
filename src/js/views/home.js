@@ -1,15 +1,35 @@
-import React from "react";
-import rigoImage from "../../img/rigo-baby.jpg";
-import "../../styles/home.scss";
+import React, { useState, useEffect } from "react";
 
-export const Home = () => (
-	<div className="text-center mt-5">
-		<h1>Hello Rigo!</h1>
-		<p>
-			<img src={rigoImage} />
-		</p>
-		<a href="#" className="btn btn-success">
-			If you see this green button, bootstrap is working
-		</a>
-	</div>
-);
+import "../../styles/home.scss";
+import CardPlanet from "../component/cardPlanets";
+
+export function Home() {
+	const [planets, setPlanets] = useState([]);
+
+	useEffect(() => {
+		fetch("https://www.swapi.tech/api/planets/", {
+			method: "GET",
+			headers: {
+				"Content-Type": "application/json"
+				// 'Content-Type': 'application/x-www-form-urlencoded',
+			}
+		})
+			.then(response => {
+				console.log(response);
+				return response.json();
+			})
+			.then(responseJson => {
+				setPlanets(responseJson.results);
+			});
+	}, []);
+
+	return (
+		<div className="text-center mt-5">
+			<ul>
+				{planets.map((planet, index) => {
+					return <CardPlanet key={index} planet={planet.name} />;
+				})}
+			</ul>
+		</div>
+	);
+}
