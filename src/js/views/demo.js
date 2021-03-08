@@ -1,43 +1,55 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Link } from "react-router-dom";
-
+import { Link, useParams } from "react-router-dom";
+import Media from "react-bootstrap/Media";
 import { Context } from "../store/appContext";
-
+import PropTypes from "prop-types";
 import "../../styles/demo.scss";
 
-export const Demo = () => {
-	const { store, actions } = useContext(Context);
+export default function Demo() {
+	const { store, action } = useContext(Context);
+	const [people, setPeople] = useState(null);
+	const params = useParams();
 
+	useEffect(() => {
+		fetch("https://www.swapi.tech/api/people/" + params.id, {
+			method: "GET",
+			headers: {
+				"Content-Type": "application/json"
+				// 'Content-Type': 'application/x-www-form-urlencoded',
+			}
+		})
+			.then(response => {
+				return response.json();
+			})
+			.then(responseJson => {
+				setPeople(responseJson.result);
+			});
+	}, []);
+	console.log(params.id);
 	return (
-		<div className="container">
-			<ul className="list-group">
-				{store.demo.map((item, index) => {
-					return (
-						<li
-							key={index}
-							className="list-group-item d-flex justify-content-between"
-							style={{ background: item.background }}>
-							<Link to={"/single/" + index}>
-								<span>Link to: {item.title}</span>
-							</Link>
-							{// Conditional render example
-							// Check to see if the background is orange, if so, display the message
-							item.background === "orange" ? (
-								<p style={{ color: item.initial }}>
-									Check store/flux.js scroll to the actions to see the code
-								</p>
-							) : null}
-							<button className="btn btn-success" onClick={() => actions.changeColor(index, "orange")}>
-								Change Color
-							</button>
-						</li>
-					);
-				})}
-			</ul>
-			<br />
-			<Link to="/">
-				<button className="btn btn-primary">Back home</button>
-			</Link>
-		</div>
+		<Media className="ml-5">
+			<img
+				width={600}
+				height={400}
+				className="mr-3"
+				src="https://picsum.photos/400/200"
+				alt="Generic placeholder"
+			/>
+
+			<Media.Body>
+				{people ? <h5>{people.properties.name}</h5> : <p>loading..</p>}
+
+				<p>
+					Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin commodo.
+					Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi
+					vulputate fringilla. Donec lacinia congue felis in faucibus.
+				</p>
+			</Media.Body>
+		</Media>
 	);
+}
+
+Demo.propTypes = {
+	person: PropTypes.string,
+	uid: PropTypes.number
 };

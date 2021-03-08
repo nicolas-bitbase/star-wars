@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import ScrollToTop from "./component/scrollToTop";
 
 import { Home } from "./views/home";
-import { Demo } from "./views/demo";
+import { Home2 } from "./views/home2";
+import Demo from "./views/demo";
 import { Single } from "./views/single";
 import injectContext from "./store/appContext";
 
@@ -16,6 +17,26 @@ const Layout = () => {
 	// you can set the basename on the .env file located at the root of this project, E.g: BASENAME=/react-hello-webapp/
 	const basename = process.env.BASENAME || "";
 
+	const [people, setPeople] = useState([]);
+
+	useEffect(() => {
+		fetch("https://www.swapi.tech/api/people", {
+			method: "GET",
+			headers: {
+				"Content-Type": "application/json"
+				// 'Content-Type': 'application/x-www-form-urlencoded',
+			}
+		})
+			.then(response => {
+				console.log(response);
+				return response.json();
+			})
+			.then(responseJson => {
+				setPeople(responseJson.results);
+				console.log(people);
+			});
+	}, []);
+
 	return (
 		<div className="d-flex flex-column">
 			<BrowserRouter basename={basename}>
@@ -24,10 +45,13 @@ const Layout = () => {
 					<Switch>
 						<Route exact path="/">
 							<Home />
+							<Home2 />
 						</Route>
-						<Route exact path="/demo">
+
+						<Route exact path="/demo/:id">
 							<Demo />
 						</Route>
+
 						<Route exact path="/single/:theid">
 							<Single />
 						</Route>

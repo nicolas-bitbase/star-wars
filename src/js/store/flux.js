@@ -1,3 +1,5 @@
+import React, { useState, useEffect, useContext } from "react";
+
 const getState = ({ getStore, getActions, setStore }) => {
 	return {
 		store: {
@@ -12,9 +14,35 @@ const getState = ({ getStore, getActions, setStore }) => {
 					background: "white",
 					initial: "white"
 				}
-			]
+			],
+			people: [],
+			person: "",
+			favorites: [],
+			variant: [{ title: "danger" }, { title: "success" }]
 		},
 		actions: {
+			addFavoritePerson: person => {
+				let favoriteList = [...getStore().favorites, person];
+
+				setStore({ favorites: favoriteList });
+			},
+
+			addPeople: people => {
+				setStore({ people: people });
+			},
+
+			deleteTask: favoritesListIndex => {
+				const newList = getStore().favorites.filter((_, index) => index !== favoritesListIndex);
+
+				setStore({ favorites: newList });
+			},
+
+			changeButton: () => {},
+
+			// TasksCounter: () => {
+			// 	return <div>{getStore().favorites.length + " item left"}</div>;
+			// },
+
 			// Use getActions to call a function within a fuction
 			exampleFunction: () => {
 				getActions().changeColor(0, "green");

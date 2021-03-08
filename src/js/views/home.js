@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from "react";
-
+import React, { useState, useEffect, useContext } from "react";
 import "../../styles/home.scss";
-import CardPlanet from "../component/cardPlanets";
+import CardPerson from "../component/cardPerson";
+import { Context } from "../store/appContext";
 
 export function Home() {
-	const [planets, setPlanets] = useState([]);
+	// const [people, setPeople] = useState([]);
+	const { store, actions } = useContext(Context);
 
 	useEffect(() => {
-		fetch("https://www.swapi.tech/api/planets/", {
+		fetch("https://www.swapi.tech/api/people/", {
 			method: "GET",
 			headers: {
 				"Content-Type": "application/json"
@@ -15,21 +16,27 @@ export function Home() {
 			}
 		})
 			.then(response => {
-				console.log(response);
 				return response.json();
 			})
 			.then(responseJson => {
-				setPlanets(responseJson.results);
+				actions.addPeople(responseJson.results);
 			});
 	}, []);
+	if (store.people.length == 0) {
+		return <p>cargando...</p>;
+	}
 
 	return (
-		<div className="text-center mt-5">
-			<ul>
-				{planets.map((planet, index) => {
-					return <CardPlanet key={index} planet={planet.name} />;
+		<div className="container-fluid py-2">
+			<div className="d-flex flex-row flex-nowrap">
+				{store.people.map((person, index) => {
+					return (
+						<div key={index}>
+							<CardPerson key={index} uid={person.uid} person={person.name} />
+						</div>
+					);
 				})}
-			</ul>
+			</div>
 		</div>
 	);
 }
